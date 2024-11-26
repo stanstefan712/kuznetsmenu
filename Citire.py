@@ -1,18 +1,35 @@
-# Deschidem fisierul text si citim datele
-file_path = 'intrare.txt'
+import csv
 
-with open(file_path, 'r') as file:
-    # Citim prima linie pentru a prelua numele tarilor
-    header = file.readline().strip().split()
-    tara1, tara2 = header[0], header[1]
+# Funcție pentru citirea datelor dintr-un fișier CSV
+def read_kuznets_data_no_pandas(file_path):
+    with open(file_path, 'r') as file:
+        reader = csv.reader(file)
+        data = list(reader)  # Convertește cititorul într-o listă de liste
+    x_values = [float(value) for value in data[0]]  # Prima linie: valori X (venituri)
+    y_values = [float(value) for value in data[1]]  # A doua linie: valori Y (inegalitate)
+    return x_values, y_values
 
-    # Citim coeficientii pentru fiecare tara
-    date_coeficienti = []
-    for linie in file:
-        coef_tara1, coef_tara2 = map(float, linie.split())
-        date_coeficienti.append((coef_tara1, coef_tara2))
+# Fișierele CSV și țările asociate
+files_and_countries = {
+    "Kuzents_Spain.csv": "Spania",
+    "kuznets_poland.csv": "Polonia",
+    "kuznets_rom.csv": "România"
+}
 
-# Afisam datele pentru verificare
-print(f"Coeficientii pentru {tara1} si {tara2} sunt:")
-for idx, (c1, c2) in enumerate(date_coeficienti, 1):
-    print(f"Linia {idx}: {tara1} = {c1}, {tara2} = {c2}")
+# Dictionar pentru stocarea datelor fiecărei țări
+country_data = {}
+
+# Citește datele pentru fiecare țară
+for file, country in files_and_countries.items():
+    x_values, y_values = read_kuznets_data_no_pandas(file)
+    country_data[country] = {
+        'X': x_values,  # Venituri
+        'Y': y_values   # Inegalitate
+    }
+
+# Afișează datele organizate
+for country, data in country_data.items():
+    print(f"Țară: {country}")
+    print("Venituri (X):", data['X'])
+    print("Inegalitate (Y):", data['Y'])
+    print()
